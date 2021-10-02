@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+    android:background="@color/app_bg"
+  android:layout_height="match_parent">
+
+  <androidx.appcompat.widget.AppCompatEditText
+      android:id="@+id/etAmount"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/enter_amount"
+      android:textColor="@color/black"
+      android:inputType="numberDecimal"
+      android:imeOptions="actionDone"
+      android:textSize="@dimen/medium_text"
+      android:padding="@dimen/medium_padding"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      android:layout_margin="@dimen/medium_margin"/>
+
+  <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/btnConvert"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/convert"
+      android:layout_margin="@dimen/medium_margin"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/etAmount"/>
+
+  <androidx.appcompat.widget.AppCompatTextView
+      android:id="@+id/txtResult"
+      android:textSize="@dimen/medium_text"
+      android:textColor="@color/black"
+      tools:text="@string/app_name"
+      android:layout_margin="@dimen/medium_margin"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/btnConvert"/>
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/currencyRecyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:spanCount="3"
+      tools:listitem="@layout/converter_list_item"
+      android:layout_margin="@dimen/medium_margin"
+      app:layout_constraintTop_toBottomOf="@+id/txtResult"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

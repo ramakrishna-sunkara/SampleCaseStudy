@@ -1,0 +1,5 @@
+<resources>
+  <string name="app_name">FlipKartCaseStudy</string>
+    <string name="convert">Convert</string>
+  <string name="enter_amount">Please enter amount</string>
+</resources>
