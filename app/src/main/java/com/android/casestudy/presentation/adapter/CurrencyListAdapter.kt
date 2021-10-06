@@ -19,28 +19,43 @@ class CurrencyListAdapter(val currencies: ArrayList<String>, val selectedCurrenc
         return CurrencyViewHolder(itemView)
     }
 
+    private lateinit var itemListener: ItemListener
+
+    interface ItemListener {
+        fun onSelectCurrency(currency: String)
+    }
+
+    fun setItemListener(itemListener: ItemListener) {
+        this.itemListener = itemListener
+    }
+
     override fun getItemCount(): Int = currencies.size
 
     override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int) {
         holder.run {
             currencies.getOrNull(position)?.let {
-                bind(info = it, selectedCurrency)
+                bind(info = it, selectedCurrency, itemListener)
             }
         }
     }
 }
 
 class CurrencyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    fun bind(info: String, selectedCurrency: String?) {
+    fun bind(info: String, selectedCurrency: String?, itemListener: CurrencyListAdapter.ItemListener) {
         with(itemView) {
             info.let { currency ->
                 txtCurrency.text = currency
                 selectedCurrency?.let {
-                    if (it === currency) {
+                    if (it == currency) {
                         imgCheck.visibility = View.VISIBLE
                     } else {
                         imgCheck.visibility = View.INVISIBLE
                     }
+                }
+            }
+            itemView.setOnClickListener {
+                itemListener.let {
+                    itemListener.onSelectCurrency(info)
                 }
             }
         }

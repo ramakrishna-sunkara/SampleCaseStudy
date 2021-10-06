@@ -11,6 +11,7 @@ import com.android.casestudy.databinding.ActivityCurrencyConverterBinding
 import com.android.casestudy.presentation.adapter.CurrencyConverterListAdapter
 import com.android.casestudy.presentation.vm.SWBTViewModel
 import com.android.casestudy.states.ConverterState
+import com.android.casestudy.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -30,15 +31,12 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
     }
 
     private fun init(){
+        viewModel.setSelectedCurrency(Constants.DEFAULT_CURRENCY)
         viewModel.loadConvertCurrencyData()
-        binding.btnConvert.setOnClickListener {
-            val list = ArrayList<String>()
-            list.add("CNY")
-            list.add("JPY")
-            viewModel.setCurrencies(list)
-            viewModel.setSelectedCurrency("JPY")
-         viewModel.currencies.value.let {
-             showBottomSheet(it!!, viewModel.selectedCurrency.value!!) }
+        binding.txtResult.setOnClickListener {
+            viewModel.selectedCurrency.value?.let {
+                showBottomSheet(it)
+            }
         }
         binding.etAmount.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
@@ -70,9 +68,7 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
                     //binding.errorTv.text = it.errorMessage
                 }
                 is ConverterState.Success -> {
-                    binding.txtResult.text = it.convertedCurrency.currency
-                    //binding.progressBar.visibility = View.GONE
-                    //binding.errorTv.visibility = View.GONE
+                    viewModel.setSelectedCurrency(it.convertedCurrency.currency)
                     setAdapter(it.convertedCurrency.currencyInfoList)
                 }
                 else -> Unit
@@ -90,9 +86,9 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
         binding.currencyRecyclerView.adapter = adapter
     }
 
-    fun showBottomSheet(currencies: ArrayList<String>, selectedCurrency: String) {
+    fun showBottomSheet(selectedCurrency: String) {
         val currencySelectionFragment: CurrencySelectionFragment =
-            CurrencySelectionFragment.newInstance(currencies, selectedCurrency)
+            CurrencySelectionFragment.newInstance(selectedCurrency)
         currencySelectionFragment.show(
             supportFragmentManager,
             CurrencySelectionFragment.TAG
@@ -101,5 +97,6 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
 
     override fun onItemClick(item: String?) {
         viewModel.setSelectedCurrency(item)
+        viewModel.loadConvertCurrencyData()
     }
 }

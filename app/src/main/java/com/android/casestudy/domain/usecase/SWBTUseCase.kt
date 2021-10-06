@@ -1,9 +1,12 @@
 package com.android.casestudy.domain.usecase
 
+import com.android.casestudy.data.modal.ConvertedCurrency
+import com.android.casestudy.data.modal.CurrencyInfo
 import com.android.casestudy.data.repository.SWBTNetworkRepository
 import com.android.casestudy.domain.mapper.SWBTMapper
 import com.android.casestudy.states.ConverterState
 import com.android.casestudy.states.UiState
+import com.android.casestudy.util.DataCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
@@ -11,7 +14,7 @@ import javax.inject.Inject
 
 interface  SWBTUseCase {
     suspend fun fetchSWBTTournamentDetails(coroutineScope: CoroutineScope,): UiState
-    suspend fun fetchQuotes(coroutineScope: CoroutineScope,): ConverterState
+    suspend fun fetchQuotes(coroutineScope: CoroutineScope, selectedCurrency: String?,): ConverterState
 }
 
 class SWBTUseCaseImpl  @Inject constructor(private val repository: SWBTNetworkRepository,
@@ -36,14 +39,45 @@ private val mapper:SWBTMapper): SWBTUseCase {
         }
     }
 
-    override suspend fun fetchQuotes(coroutineScope: CoroutineScope): ConverterState {
+    override suspend fun fetchQuotes(coroutineScope: CoroutineScope, selectedCurrency: String?): ConverterState {
         runCatching {
-            val fetchQuotes = coroutineScope.async(start = CoroutineStart.DEFAULT) {
-                repository.getQuotes()
+            val converterData = DataCache.getData(DataCache.CONVERTER_DATA);
+            if (null == converterData) {
+                val fetchQuotes = coroutineScope.async(start = CoroutineStart.DEFAULT) {
+                    repository.getQuotes()
+                }
+                val result = fetchQuotes.await()
+                val converterCurrency = mapper.convertQuotesResponse(result)
+                val currencyList: ArrayList<String> = converterCurrency.quotes.entries.map {
+                    it.key.replace(result.source, "")
+                }.toList() as ArrayList<String>
+                currencyList.remove("")
+                currencyList.add(0, result.source)
+                DataCache.putData(DataCache.CURRENCY_LIST, currencyList)
+                DataCache.putData(DataCache.CONVERTER_DATA, converterCurrency)
+                return ConverterState.Success(converterCurrency)
+            }else {
+                val mConverterData = converterData as ConvertedCurrency
+                var selectedCurrencyInfo : CurrencyInfo? = null
+                mConverterData.currencyInfoList.forEach { currencyInfo ->
+                    run {
+                        if (currencyInfo.countryName == selectedCurrency) {
+                            selectedCurrencyInfo = currencyInfo
+                        }
+                    }
+                }
+                selectedCurrency?.let {
+                    mConverterData.currency = it
+                }
+                mConverterData.currencyInfoList.forEach { currencyInfo ->
+                    run {
+                        selectedCurrencyInfo?.currencyValue?.let {
+                            currencyInfo.currencyValue = currencyInfo.currencyValue/it
+                        }
+                    }
+                }
+                return ConverterState.Success(mConverterData)
             }
-            val result = fetchQuotes.await()
-            return ConverterState.Success(mapper.convertQuotesResponse(result))
-
         }.getOrElse {
             return  ConverterState.ApiError("Error while fetching quotes")
         }

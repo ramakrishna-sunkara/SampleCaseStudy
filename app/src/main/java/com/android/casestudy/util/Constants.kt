@@ -8,4 +8,5 @@ object Constants {
     const val FOUR_DECIMAL = "%.4f"
     const val EXTRA_CURRENCY_LIST = "extraCurrencyList"
     const val EXTRA_SELECTED_CURRENCY = "extraSelectedCurrency"
+    const val DEFAULT_CURRENCY = "USD"
 }

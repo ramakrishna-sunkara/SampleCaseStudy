@@ -5,19 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import com.android.casestudy.R
 import com.android.casestudy.data.modal.CurrencyInfo
 import com.android.casestudy.databinding.ActivityCurrencyConverterBinding
 import com.android.casestudy.databinding.FragmentCurrencySelectionBinding
 import com.android.casestudy.presentation.adapter.CurrencyConverterListAdapter
 import com.android.casestudy.presentation.adapter.CurrencyListAdapter
+import com.android.casestudy.presentation.adapter.CurrencyListAdapter.ItemListener
 import com.android.casestudy.util.Constants
+import com.android.casestudy.util.DataCache
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CurrencySelectionFragment : BottomSheetDialogFragment(), View.OnClickListener {
     private var mListener: ItemClickListener? = null
     private var selectedCurrency: String? = null
-    private var currencies = ArrayList<String>()
     private lateinit var binding: FragmentCurrencySelectionBinding
 
     override fun onCreateView(
@@ -58,7 +60,6 @@ class CurrencySelectionFragment : BottomSheetDialogFragment(), View.OnClickListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currencies = arguments?.getSerializable(Constants.EXTRA_CURRENCY_LIST) as ArrayList<String>;
         selectedCurrency = arguments?.getString(Constants.EXTRA_SELECTED_CURRENCY).toString()
     }
 
@@ -67,15 +68,20 @@ class CurrencySelectionFragment : BottomSheetDialogFragment(), View.OnClickListe
     }
 
     private fun setAdapter() {
-        binding.currencyRecyclerView.adapter =
-            CurrencyListAdapter(currencies, selectedCurrency)
+        val adapter = CurrencyListAdapter(DataCache.getData(DataCache.CURRENCY_LIST) as ArrayList<String>, selectedCurrency)
+        adapter.setItemListener(object : ItemListener{
+            override fun onSelectCurrency(currency: String) {
+                mListener!!.onItemClick(currency)
+                dismiss()
+            }
+        })
+        binding.currencyRecyclerView.adapter = adapter
     }
 
     companion object {
         const val TAG = "CurrencySelectionFragment"
-        fun newInstance(currencies: ArrayList<String>, selectedCurrency: String): CurrencySelectionFragment {
+        fun newInstance(selectedCurrency: String): CurrencySelectionFragment {
             val bundle = Bundle()
-            bundle.putSerializable(Constants.EXTRA_CURRENCY_LIST, currencies)
             bundle.putString(Constants.EXTRA_SELECTED_CURRENCY, selectedCurrency)
             val currencySelectionFragment = CurrencySelectionFragment()
             currencySelectionFragment.arguments = bundle

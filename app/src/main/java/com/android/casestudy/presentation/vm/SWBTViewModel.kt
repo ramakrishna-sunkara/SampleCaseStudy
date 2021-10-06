@@ -41,7 +41,7 @@ class SWBTViewModel @ViewModelInject internal constructor(
     override fun loadConvertCurrencyData() {
         viewModelScope.launch {
             _converterState.value = ConverterState.InitialLoading
-            _converterState.value = useCase.fetchQuotes(this)
+            _converterState.value = useCase.fetchQuotes(this, selectedCurrency.value)
         }
     }
 
