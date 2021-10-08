@@ -10,6 +10,7 @@ import com.android.casestudy.util.DataCache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
+import java.math.BigDecimal
 import javax.inject.Inject
 
 interface  SWBTUseCase {
@@ -57,24 +58,19 @@ private val mapper:SWBTMapper): SWBTUseCase {
                 DataCache.putData(DataCache.CONVERTER_DATA, converterCurrency)
                 return ConverterState.Success(converterCurrency)
             }else {
-                val mConverterData = converterData as ConvertedCurrency
-                var selectedCurrencyInfo : CurrencyInfo? = null
-                mConverterData.currencyInfoList.forEach { currencyInfo ->
-                    run {
-                        if (currencyInfo.countryName == selectedCurrency) {
-                            selectedCurrencyInfo = currencyInfo
-                        }
+                var mConverterData = converterData as ConvertedCurrency
+                var fromCurrencyValue = 0.0
+                mConverterData.currencyInfoList.map {
+                    if (it.countryName == selectedCurrency) {
+                        //selectedCurrencyInfo = it
+                        fromCurrencyValue = it.currencyValue
                     }
+                }
+                mConverterData.currencyInfoList.map {
+                        it.currencyValue = it.currencyValue/fromCurrencyValue
                 }
                 selectedCurrency?.let {
                     mConverterData.currency = it
-                }
-                mConverterData.currencyInfoList.forEach { currencyInfo ->
-                    run {
-                        selectedCurrencyInfo?.currencyValue?.let {
-                            currencyInfo.currencyValue = currencyInfo.currencyValue/it
-                        }
-                    }
                 }
                 return ConverterState.Success(mConverterData)
             }
