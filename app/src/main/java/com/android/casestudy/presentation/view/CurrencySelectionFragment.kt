@@ -5,12 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import com.android.casestudy.R
-import com.android.casestudy.data.modal.CurrencyInfo
-import com.android.casestudy.databinding.ActivityCurrencyConverterBinding
+import com.android.casestudy.data.local.IPreferenceHelper
+import com.android.casestudy.data.local.PreferenceManager
 import com.android.casestudy.databinding.FragmentCurrencySelectionBinding
-import com.android.casestudy.presentation.adapter.CurrencyConverterListAdapter
 import com.android.casestudy.presentation.adapter.CurrencyListAdapter
 import com.android.casestudy.presentation.adapter.CurrencyListAdapter.ItemListener
 import com.android.casestudy.util.Constants
@@ -21,6 +18,7 @@ class CurrencySelectionFragment : BottomSheetDialogFragment(), View.OnClickListe
     private var mListener: ItemClickListener? = null
     private var selectedCurrency: String? = null
     private lateinit var binding: FragmentCurrencySelectionBinding
+    val preferenceHelper: IPreferenceHelper by lazy { PreferenceManager(requireActivity()) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +66,7 @@ class CurrencySelectionFragment : BottomSheetDialogFragment(), View.OnClickListe
     }
 
     private fun setAdapter() {
-        val adapter = CurrencyListAdapter(DataCache.getData(DataCache.CURRENCY_LIST) as ArrayList<String>, selectedCurrency)
+        val adapter = CurrencyListAdapter(preferenceHelper.getCurrencyList() as ArrayList<String>, selectedCurrency)
         adapter.setItemListener(object : ItemListener{
             override fun onSelectCurrency(currency: String) {
                 mListener!!.onItemClick(currency)

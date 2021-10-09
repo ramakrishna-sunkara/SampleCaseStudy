@@ -6,7 +6,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.android.casestudy.data.modal.CurrencyInfo
+import com.android.casestudy.data.modal.CurrencyConvertedInfo
 import com.android.casestudy.databinding.ActivityCurrencyConverterBinding
 import com.android.casestudy.presentation.adapter.CurrencyConverterListAdapter
 import com.android.casestudy.presentation.vm.SWBTViewModel
@@ -69,7 +69,7 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
                 }
                 is ConverterState.Success -> {
                     viewModel.setSelectedCurrency(it.convertedCurrency.currency)
-                    setAdapter(it.convertedCurrency.currencyInfoList)
+                    setAdapter(it.convertedCurrency.currencyConvertedInfoList)
                 }
                 else -> Unit
             }
@@ -80,7 +80,7 @@ class CurrencyConverterActivity : AppCompatActivity(), CurrencySelectionFragment
         })
     }
 
-    private fun setAdapter(response: List<CurrencyInfo>) {
+    private fun setAdapter(response: List<CurrencyConvertedInfo>) {
         binding.currencyRecyclerView.visibility = View.VISIBLE
         adapter = CurrencyConverterListAdapter(itemList = response)
         binding.currencyRecyclerView.adapter = adapter

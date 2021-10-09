@@ -7,8 +7,6 @@ import com.android.casestudy.data.modal.dto.MatchResponseDTO
 import com.android.casestudy.data.modal.dto.PlayerDTO
 import com.android.casestudy.data.modal.dto.PlayerResponseDTO
 import com.android.casestudy.util.Constants
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import javax.inject.Inject
 
 class SWBTMapper @Inject constructor() :
@@ -107,9 +105,17 @@ class SWBTMapper @Inject constructor() :
     }
 
     fun convertQuotesResponse(result: ConverterResponseDTO): ConvertedCurrency {
-        val currencyInfos: List<CurrencyInfo> = result.quotes.entries.map {
-            CurrencyInfo(it.key.replace(result.source,Constants.EMPTY),it.value.toDouble()) }
-        return ConvertedCurrency(result.source, result.quotes, currencyInfos)
+        val currencyConvertedInfos: List<CurrencyConvertedInfo> = result.quotes.entries.map {
+            CurrencyConvertedInfo(it.key.replace(result.source,Constants.EMPTY),it.value.toDouble()) }
+        val convertedCurrency = ConvertedCurrency(result.source)
+        convertedCurrency.currencyConvertedInfoList = currencyConvertedInfos
+        val currencyList: ArrayList<String> = result.quotes.entries.map {
+            it.key.replace(result.source, "")
+        }.toList() as ArrayList<String>
+        currencyList.remove("")
+        currencyList.add(0, result.source)
+        convertedCurrency.currencyList = currencyList
+        return convertedCurrency
     }
 
 }

@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.casestudy.data.local.IPreferenceHelper
+import com.android.casestudy.data.local.PreferenceManager
 import com.android.casestudy.domain.usecase.SWBTUseCase
 import com.android.casestudy.states.ConverterState
 import com.android.casestudy.states.UiState

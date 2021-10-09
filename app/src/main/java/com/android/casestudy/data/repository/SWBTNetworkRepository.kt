@@ -1,5 +1,6 @@
 package com.android.casestudy.data.repository
 
+import android.content.Context
 import com.android.casestudy.data.SwbtAPI
 import com.android.casestudy.data.modal.dto.ConverterResponseDTO
 import com.android.casestudy.data.modal.dto.MatchResponseDTO
@@ -10,9 +11,10 @@ interface SWBTNetworkRepository {
     suspend fun getSWBTPlayerList(): List<PlayerResponseDTO>
     suspend fun getSWBTMatchList(): List<MatchResponseDTO>
     suspend fun getQuotes(): ConverterResponseDTO
+    fun getContext(): Context
 }
 
-class SWBTNetworkRepositoryImpl @Inject constructor(private val swbtApi:SwbtAPI) : SWBTNetworkRepository {
+class SWBTNetworkRepositoryImpl @Inject constructor(private val context: Context, private val swbtApi:SwbtAPI): SWBTNetworkRepository {
     override suspend fun getSWBTPlayerList(): List<PlayerResponseDTO> {
         return swbtApi.getPlayerList()
     }
@@ -23,5 +25,9 @@ class SWBTNetworkRepositoryImpl @Inject constructor(private val swbtApi:SwbtAPI)
 
     override suspend fun getQuotes(): ConverterResponseDTO {
         return swbtApi.getQuotes()
+    }
+
+    override fun getContext(): Context {
+        return context
     }
 }

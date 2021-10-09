@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.casestudy.R
-import com.android.casestudy.data.modal.CurrencyInfo
+import com.android.casestudy.data.modal.CurrencyConvertedInfo
 import com.android.casestudy.util.Constants
 import kotlinx.android.synthetic.main.converter_list_item.view.*
 
-class CurrencyConverterListAdapter(val itemList: List<CurrencyInfo?>) :
+class CurrencyConverterListAdapter(val itemList: List<CurrencyConvertedInfo?>) :
     RecyclerView.Adapter<CurrencyConverterViewHolder>() {
     private var count: Double = 1.00
     override fun onCreateViewHolder(
@@ -29,16 +29,16 @@ class CurrencyConverterListAdapter(val itemList: List<CurrencyInfo?>) :
     override fun onBindViewHolder(holder: CurrencyConverterViewHolder, position: Int) {
         holder.run {
             itemList.getOrNull(position)?.let {
-                bind(info = it, count)
+                bind(convertedInfo = it, count)
             }
         }
     }
 }
 
 class CurrencyConverterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    fun bind(info: CurrencyInfo, count: Double) {
+    fun bind(convertedInfo: CurrencyConvertedInfo, count: Double) {
         with(itemView) {
-            info.let {
+            convertedInfo.let {
                 txtCountry.text = it.countryName
                 txtCurrency.text = Constants.FOUR_DECIMAL.format(it.currencyValue * count)
             }
